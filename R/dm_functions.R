@@ -63,3 +63,65 @@ kmeans_learn<-function(raw_data,CallPut="call",error_type="ARPE",randseed=0,mone
 	# return(list(result_data=result_data,summary=summary))
   return(result_data)
 }
+
+#' @export
+manual_learn<-function(raw_data,CallPut,moneyness_breaks,maturity_breaks){
+
+  #First define the manual clusters
+	transformed_data <-
+    raw_data %>%
+    dplyr::filter(type==CallPut) %>%
+		dplyr::mutate( moneyness_limits=cut(moneyness,moneyness_breaks),
+				           maturity_limits=cut(maturity,maturity_breaks))
+
+  #Get the average error in each cluster
+	manual_centers <-
+    transformed_data %>%
+		dplyr::filter(t_or_p=="Training") %>%
+		dplyr::group_by(moneyness_limits,maturity_limits) %>%
+		dplyr::summarise(model_estimate=mean(pricing_error,na.rm=TRUE))
+
+  #Calculate the prediction error
+	result_data <-
+    transformed_data %>%
+  	dplyr::left_join(.,manual_centers,by=c("moneyness_limits","maturity_limits")) %>%
+  	dplyr::mutate(prediction_error=abs(pricing_error-model_estimate)/pmax(abs(pricing_error),0.01))
+
+	# summary<- result_data %>% group_by(TrainPred) %>% summarise(MAPE=mean(MAPE,na.rm=TRUE)) %>% select(MAPE) %>% unlist
+	# names(summary)<-c("Prediction","Training")
+	# return(list(result_data=result_data,summary=summary))
+  return(result_data)
+}
+
+#' @export
+dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0){
+
+	if(randseed>0){
+		set.seed(randseed)
+	}
+	transformed_data <- dplyr::filter(raw_data,type==CallPut)
+	# training_data<-filter(transformed_data,TrainPred=="Training")
+	the_formula<- as.formula(paste0("pricing_error"," ~ ","moneyness + maturity"))
+  #Support vector machine
+	if(model_name=="svm"){
+		the_model<-e1071::svm(formula=the_formula,data=transformed_data,subset=(transformed_data$t_or_p=="Training"),kernel="radial",scale=FALSE)
+	}else if(model_name=="cit"){
+    #Conditional inference tree
+		the_model<-partykit::ctree(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"))
+	}else if(model_name=="dt"){
+    #Decision tree
+		the_model<-rpart::rpart(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"))
+	}else{
+		stop("Wrong model name!")
+	}
+
+	result_data <-
+    transformed_data %>%
+	 	dplyr::mutate(model_estimate=predict(the_model,.)) %>%
+		dplyr::mutate_(prediction_error=lazyeval::interp(~(abs(pricing_error-model_estimate)/pmax(abs(pricing_error),0.01))))
+
+	# summary<- result_data %>% group_by(TrainPred) %>% summarise(MAPE=mean(MAPE,na.rm=TRUE)) %>% select(MAPE) %>% unlist
+	# names(summary)<-c("Prediction","Training")
+	# return(list(result_data=result_data,summary=summary))
+  return(result_data)
+}
