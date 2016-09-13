@@ -16,5 +16,7 @@ Imports:
     e1071,
     lazyeval,
     partykit,
-    rpart
+    rpart,
+    xlsx,
+    readxl
 RoxygenNote: 5.0.1.9000

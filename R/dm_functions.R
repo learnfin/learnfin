@@ -1,7 +1,18 @@
 #Below functions are individual DM algorithms and other supplementary functions used in uslfin package
 
+#' @title K-Means Learn
+#'
+#' @description
+#' Implements a specialized version of K-Means algorithm on the data set. When creating the clusters (in-sample) the function uses pricing_error, moneyness and maturity. But when predicting, it uses only moneyness and maturity covariates. All covariates are scaled between 0-100.
+#'
+#' @param raw_data The option data set given in the format of \link{uslfin_ds_1}.
+#' @param CallPut It denotes whether to use the call or put options.
+#' @param randseed To set the randomness seed to a known value. Good for reproducibility.
+#' @param moneyness_interval Minimum and maximum of moneyness values. Required for rescaling.
+#' @param maturity_interval Minimum and maximum of maturity values. Required for rescaling. In trading days (one year \= 252 days)
+#' @param n_cluster Number of clusters. If \code{0}, then number of clusers is determined by the contract set size. Exact calculation is \code{min(round(nrow(training_matrix)/100),200)}
 #' @export
-kmeans_learn<-function(raw_data,CallPut="call",error_type="ARPE",randseed=0,moneyness_interval,maturity_interval){
+kmeans_learn<-function(raw_data,CallPut="call",randseed=0,moneyness_interval=c(0.9,1.1),maturity_interval=c(4,252),n_cluster=0){
 	scaled_data <-
     raw_data %>%
     #Use only appropriate option type (call or put)
@@ -24,7 +35,9 @@ kmeans_learn<-function(raw_data,CallPut="call",error_type="ARPE",randseed=0,mone
 		as.matrix
 
   #Number of clusters are determined by the number of contracts (n_contracts/100). Max 200 clusters
-	n_cluster <- min(round(nrow(training_matrix)/100),200)
+  if(n_cluster == 0){
+    n_cluster <- min(round(nrow(training_matrix)/100),200)
+  }
 
   #Set the seed if there is a predetermined one
 	if(randseed>0){
@@ -64,8 +77,16 @@ kmeans_learn<-function(raw_data,CallPut="call",error_type="ARPE",randseed=0,mone
   return(result_data)
 }
 
+#' @title Manual Learn
+#'
+#' @description
+#' Given a set of moneyness and maturity boundaries and a option data set, this function calculates in-sample and out-of-sample clustering errors.
+#' @param raw_data The option data set given in the format of \link{uslfin_ds_1}.
+#' @param CallPut It denotes whether to use the call or put options.
+#' @param moneyness_breaks Vector of moneyness boundaries.
+#' @param moneyness_breaks Vector of maturity boundaries.
 #' @export
-manual_learn<-function(raw_data,CallPut,moneyness_breaks,maturity_breaks){
+manual_learn<-function(raw_data,CallPut,moneyness_breaks=c(0.899,0.94,0.97,1.00,1.03,1.06,1.101),maturity_breaks=c(0,42,126,252)){
 
   #First define the manual clusters
 	transformed_data <-
@@ -93,8 +114,17 @@ manual_learn<-function(raw_data,CallPut,moneyness_breaks,maturity_breaks){
   return(result_data)
 }
 
+#' @title DM Learn
+#'
+#' @description
+#' Implements different data mining algorithms (SVM, CIT and DT).
+#' @param raw_data The option data set given in the format of \link{uslfin_ds_1}.
+#' @param model_name The name of the data mining model to use. Currently there are three options: Support Vector Machine (\code{"svm"}) of \code{e1071} package, Decision Tree (\code{"dt"}) of \code{rpart} package and Conditional Inference Tree \code{("cit")} of the \code{partykit} package.
+#' @param CallPut It denotes whether to use the call or put options.
+#' @param randseed To set the randomness seed to a known value. Good for reproducibility.
+#' @param ... Parameters to pass to data mining algorithm functions. (See individual functions for further explanations.)
 #' @export
-dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0){
+dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0,...){
 
 	if(randseed>0){
 		set.seed(randseed)
@@ -104,13 +134,13 @@ dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0){
 	the_formula<- as.formula(paste0("pricing_error"," ~ ","moneyness + maturity"))
   #Support vector machine
 	if(model_name=="svm"){
-		the_model<-e1071::svm(formula=the_formula,data=transformed_data,subset=(transformed_data$t_or_p=="Training"),kernel="radial",scale=FALSE)
+		the_model<-e1071::svm(formula=the_formula,data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
 	}else if(model_name=="cit"){
     #Conditional inference tree
-		the_model<-partykit::ctree(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"))
+		the_model<-partykit::ctree(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
 	}else if(model_name=="dt"){
     #Decision tree
-		the_model<-rpart::rpart(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"))
+		the_model<-rpart::rpart(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
 	}else{
 		stop("Wrong model name!")
 	}

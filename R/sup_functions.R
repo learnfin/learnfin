@@ -1,5 +1,9 @@
 #Below functions are supplementary functions used in uslfin package
 
+#' Calculate Pricing Error
+#' @param mar_price Market price of the contract.
+#' @param mod_price Model price of the contract.
+#' @param error_type The pricing error type. It will be automatically calculated. Choose from (Absolute) Relative Pricing Error (denoted with RPE or ARPE), squared error (denoted with SE) or absolute pricing error (APE).
 #' @export
 calculate_pricing_error<-function(mar_price,mod_price,error_type){
   if(error_type=="ARPE"){
