@@ -138,6 +138,7 @@ dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0,...){
 	}else if(model_name=="cit"){
     #Conditional inference tree
 		the_model<-partykit::ctree(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
+    print(unlist(the_model$info$control[1:7]))
 	}else if(model_name=="dt"){
     #Decision tree
 		the_model<-rpart::rpart(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
