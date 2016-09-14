@@ -22,7 +22,7 @@ NULL
 #' @param export_folder Result raw file export folder.
 #' @param summary_to_excel Should prediction error summaries automatically be exported to excel files?
 #' @export
-run_full_experiment<-function(data_set="uslfin_ds_1",error_type="ARPE",method="svm",path_name=getwd(),file_name="input_parameters.xlsx",randseed=0,verbal_feedback=TRUE,export_raw_results=FALSE,export_folder="results",summary_to_excel=FALSE){
+run_full_experiment<-function(data_set="uslfin_ds_1",error_type="ARPE",method="kmeans",path_name=getwd(),file_name="input_parameters.xlsx",randseed=0,verbal_feedback=TRUE,export_raw_results=FALSE,export_folder="results",summary_to_excel=FALSE){
 
       if(export_raw_results){
         export_path<-paste0(path_name,"/",export_folder,"/")
@@ -45,7 +45,7 @@ run_full_experiment<-function(data_set="uslfin_ds_1",error_type="ARPE",method="s
     the_parameters <-
       readxl::read_excel(paste0(path_name,"/",file_name),sheet=method) %>%
       tidyr::gather(.,parameter,value,-model_num) %>%
-      filter(!is.na(value))
+      dplyr::filter(!is.na(value))
 
     parametrizations<-unique(the_parameters$model_num)
 

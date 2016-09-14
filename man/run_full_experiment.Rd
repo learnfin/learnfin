@@ -5,7 +5,7 @@
 \title{Run Full Experiment}
 \usage{
 run_full_experiment(data_set = "uslfin_ds_1", error_type = "ARPE",
-  method = "svm", path_name = getwd(),
+  method = "kmeans", path_name = getwd(),
   file_name = "input_parameters.xlsx", randseed = 0,
   verbal_feedback = TRUE, export_raw_results = FALSE,
   export_folder = "results", summary_to_excel = FALSE)
