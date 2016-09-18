@@ -18,5 +18,6 @@ Imports:
     partykit,
     rpart,
     xlsx,
-    readxl
+    readxl,
+    tidyr
 RoxygenNote: 5.0.1.9000
