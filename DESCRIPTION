@@ -1,6 +1,6 @@
 Package: uslfin
 Title: Unsupervised Learning Methods for Financial Decision Making
-Version: 0.0.1
+Version: 0.0.1.1
 Authors@R: person("Berk", "Orbay", email = "berkorbay@mail.com", role = c("aut", "cre"))
 Description: This package uses unsupervised learning (USL) methods on sets of
     financial option contracts in order to determine which USL method works better
