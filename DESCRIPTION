@@ -14,7 +14,7 @@ Imports:
     lazyeval,
     partykit,
     rpart,
-    xlsx,
+    openxlsx,
     readxl,
     tidyr,
     scales,

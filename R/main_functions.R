@@ -98,7 +98,7 @@ run_full_experiment<-function(data_set="learnfin_ds_1",error_type="ARPE",method=
         rbind(the_summary,.)
     }
     if(summary_to_excel){
-      xlsx::write.xlsx2(data.frame(the_summary),path.expand(paste0(path_name,"/",data_set,"_",error_type,"_",method,"_method_","results_summary.xlsx")),row.names=FALSE)
+      openxlsx::write.xlsx(data.frame(the_summary),path.expand(paste0(path_name,"/",data_set,"_",error_type,"_",method,"_method_","results_summary.xlsx")),row.names=FALSE)
     }
     return(the_summary)
 }
