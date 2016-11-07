@@ -22,7 +22,7 @@ NULL
 #' @param export_folder Result raw file export folder.
 #' @param summary_to_excel Should prediction error summaries automatically be exported to excel files?
 #' @export
-run_full_experiment<-function(data_set="uslfin_ds_1",error_type="ARPE",method="kmeans",path_name=getwd(),file_name="input_parameters.xlsx",randseed=0,verbal_feedback=TRUE,export_raw_results=FALSE,export_folder="results",summary_to_excel=FALSE){
+run_full_experiment<-function(data_set="learnfin_ds_1",error_type="ARPE",method="kmeans",path_name=getwd(),file_name="input_parameters.xlsx",randseed=0,verbal_feedback=TRUE,export_raw_results=FALSE,export_folder="results",summary_to_excel=FALSE){
 
       if(export_raw_results){
         export_path<-paste0(path_name,"/",export_folder,"/")

@@ -5,7 +5,7 @@
 \title{DM Learn}
 \usage{
 dm_learn(raw_data, model_name = "svm", CallPut = "call", randseed = 0,
-  ...)
+  export_plots = FALSE, ...)
 }
 \arguments{
 \item{raw_data}{The option data set given in the format of \link{uslfin_ds_1}.}

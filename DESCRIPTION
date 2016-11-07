@@ -1,11 +1,8 @@
-Package: uslfin
-Title: Unsupervised Learning Methods for Financial Decision Making
+Package: learnfin
+Title: Machine Learning Methods for Financial Decision Making
 Version: 0.0.1.1
 Authors@R: person("Berk", "Orbay", email = "berkorbay@mail.com", role = c("aut", "cre"))
-Description: This package uses unsupervised learning (USL) methods on sets of
-    financial option contracts in order to determine which USL method works better
-    to correctly predict future pricing errors given the moneyness and maturity
-    covariates.
+Description: This package uses basic and advanced machine learning methods on sets of financial option contracts in order to determine which learning method works better to correctly predict future pricing errors given the moneyness and maturity covariates.
 Depends:
     R (>= 3.3.1)
 License: What license is it under?
@@ -19,5 +16,7 @@ Imports:
     rpart,
     xlsx,
     readxl,
-    tidyr
+    tidyr,
+    scales,
+    ggplot2
 RoxygenNote: 5.0.1.9000

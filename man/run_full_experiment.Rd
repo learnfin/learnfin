@@ -4,7 +4,7 @@
 \alias{run_full_experiment}
 \title{Run Full Experiment}
 \usage{
-run_full_experiment(data_set = "uslfin_ds_1", error_type = "ARPE",
+run_full_experiment(data_set = "learnfin_ds_1", error_type = "ARPE",
   method = "kmeans", path_name = getwd(),
   file_name = "input_parameters.xlsx", randseed = 0,
   verbal_feedback = TRUE, export_raw_results = FALSE,

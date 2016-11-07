@@ -1,4 +1,4 @@
-#Below functions are supplementary functions used in uslfin package
+#Below functions are supplementary functions used in learnfin package
 
 #' Calculate Pricing Error
 #' @param mar_price Market price of the contract.

@@ -5,7 +5,8 @@
 \title{Manual Learn}
 \usage{
 manual_learn(raw_data, CallPut, moneyness_breaks = c(0.899, 0.94, 0.97, 1,
-  1.03, 1.06, 1.101), maturity_breaks = c(0, 42, 126, 252))
+  1.03, 1.06, 1.101), maturity_breaks = c(0, 42, 126, 252),
+  export_plots = FALSE)
 }
 \arguments{
 \item{raw_data}{The option data set given in the format of \link{uslfin_ds_1}.}

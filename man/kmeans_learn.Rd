@@ -6,7 +6,7 @@
 \usage{
 kmeans_learn(raw_data, CallPut = "call", randseed = 0,
   moneyness_interval = c(0.9, 1.1), maturity_interval = c(4, 252),
-  n_cluster = 0)
+  n_cluster = 0, export_plots = FALSE)
 }
 \arguments{
 \item{raw_data}{The option data set given in the format of \link{uslfin_ds_1}.}
