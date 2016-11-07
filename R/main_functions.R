@@ -88,13 +88,15 @@ run_full_experiment<-function(data_set="learnfin_ds_1",error_type="ARPE",method=
         dplyr::ungroup() %>%
         dplyr::mutate(parameter_set=i) %>%
         dplyr::select(parameter_set,dplyr::everything()) %>%
-        rbind(the_summary,.)
+        dplyr::slice(1:nrow(.)) %>%
+        base::rbind(the_summary,.)
 
       the_summary <-
         result_table %>%
         dplyr::summarise(contracts=n(),mean_error=mean(prediction_error),sd_error=sd(prediction_error),quantile_25=quantile(prediction_error,0.25),median_error=median(prediction_error),quantile_75=quantile(prediction_error,0.75)) %>%
         dplyr::mutate(parameter_set=i,type="all",t_or_p="all") %>%
         dplyr::select(parameter_set,type,t_or_p,dplyr::everything()) %>%
+        dplyr::slice(1:nrow(.)) %>%
         rbind(the_summary,.)
     }
     if(summary_to_excel){
