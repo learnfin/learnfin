@@ -102,6 +102,9 @@ kmeans_learn<-function(raw_data,CallPut="call",randseed=0,moneyness_interval=c(0
 #' Plot the Kmeans graphs.
 plot_export_kmeans<-function(the_df){
 
+	opt_type <- the_df$type[1]
+	timestamp <- format(Sys.time(),"%Y%m%d%H%M")
+
 	#General theme options
 	plot_theme_opts <- ggplot2::scale_color_gradientn(colors=c("green","yellow","red","purple","black"),values=scales::rescale(c(0,10,25,50,100),to=c(0,1),from=c(0,100)),limits=c(0,100),oob=scales::squish)
 
@@ -119,7 +122,7 @@ plot_export_kmeans<-function(the_df){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/kmeans_method_training_pricing_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_training_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot <-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -130,7 +133,7 @@ plot_export_kmeans<-function(the_df){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/kmeans_method_prediction_pricing_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_prediction_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot <-
 	ggplot2::ggplot() +
@@ -140,7 +143,7 @@ plot_export_kmeans<-function(the_df){
 	ggplot2::labs(fill="",title=paste0("Cluster Estimates (K-Means Method)")) +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_cluster_estimate_pricing_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_cluster_estimate_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Training"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -149,7 +152,7 @@ plot_export_kmeans<-function(the_df){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/kmeans_method_training_prediction_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_training_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -158,7 +161,7 @@ plot_export_kmeans<-function(the_df){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/kmeans_method_prediction_prediction_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/kmeans_method_prediction_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 
 
@@ -218,30 +221,11 @@ manual_learn<-function(raw_data,CallPut,moneyness_breaks=c(0.899,0.94,0.97,1.00,
 #' Explanatory plots for manual method.
 plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 
+	opt_type <- the_df$type[1]
+	timestamp <- format(Sys.time(),"%Y%m%d%H%M")
+
 	#General theme options
 	plot_theme_opts <- ggplot2::scale_color_gradientn(colors=c("green","yellow","red","purple","black"),values=scales::rescale(c(0,10,25,50,100),to=c(0,1),from=c(0,100)),limits=c(0,100),oob=scales::squish)
-
-	# the_plot<-
-	# ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Training"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
-	#     ggplot2::geom_point(ggplot2::aes(color=pricing_error),alpha=0.7,size=2) +
-	#     ggplot2::geom_vline(xintercept=as.numeric(moneyness_breaks)) +
-	#     ggplot2::geom_hline(yintercept=as.numeric(maturity_breaks)) +
-	# 	ggplot2::labs(title="Training Data Pricing Error (Manual Method)",color="APE") +
-	# 	plot_theme_opts +
-	# 	ggplot2::theme_bw()
-	#
-	# ggplot2::ggsave("learnfin_plots/manual_method_training_pricing_error.png",the_plot,width=12,height=5)
-	#
-	# the_plot<-
-	# ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
-	#     ggplot2::geom_point(ggplot2::aes(color=pricing_error),alpha=0.7,size=2) +
-	#     ggplot2::geom_vline(xintercept=as.numeric(moneyness_breaks)) +
-	#     ggplot2::geom_hline(yintercept=as.numeric(maturity_breaks)) +
-	# 	ggplot2::labs(title="Prediction Data Pricing Error (Manual Method)",color="APE") +
-	# 	plot_theme_opts +
-	# 	ggplot2::theme_bw()
-	#
-	# ggplot2::ggsave("learnfin_plots/manual_method_prediction_pricing_error.png",the_plot,width=12,height=5)
 
 	#Calculate moneyness-maturity group corners
 	mon_range<-data.frame(mon_min=moneyness_breaks[-length(moneyness_breaks)],mon_max=moneyness_breaks[-1])
@@ -261,7 +245,6 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 		dplyr::left_join(.,the_df %>%
 		dplyr::distinct(moneyness_limits,maturity_limits,model_estimate), by=c("moneyness_limits","maturity_limits"))
 
-
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Training"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
 	#Shaded area plot
@@ -275,7 +258,7 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/manual_method_training_pricing_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/manual_method_training_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -290,7 +273,7 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/manual_method_prediction_pricing_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/manual_method_prediction_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot <-
 	ggplot2::ggplot() +
@@ -299,7 +282,7 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 	ggplot2::labs(fill="",title=paste0("Cluster Estimates (Manual Method)")) +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/manual_method_cluster_estimate_pricing_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/manual_method_cluster_estimate_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Training"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -310,7 +293,7 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/manual_method_training_prediction_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/manual_method_training_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -321,7 +304,7 @@ plot_export_manual<-function(the_df,moneyness_breaks,maturity_breaks){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave("learnfin_plots/manual_method_prediction_prediction_error.png",the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/manual_method_prediction_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 
 }
@@ -354,6 +337,7 @@ dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0,export_pl
 	}else if(model_name=="dt"){
     #Decision tree
 		the_model<-rpart::rpart(the_formula, data=transformed_data,subset=(transformed_data$t_or_p=="Training"),...)
+		the_model <- partykit::as.party(the_model)
 	}else{
 		stop("Wrong model name!")
 	}
@@ -395,6 +379,9 @@ dm_learn<-function(raw_data,model_name="svm",CallPut="call",randseed=0,export_pl
 
 plot_export_dm<-function(the_df,data_mesh,model_name){
 
+	opt_type <- the_df$type[1]
+	timestamp <- format(Sys.time(),"%Y%m%d%H%M")
+
 	plot_theme_opts <- ggplot2::scale_color_gradientn(colors=c("green","yellow","red","purple","black"),values=scales::rescale(c(0,10,25,50,100),to=c(0,1),from=c(0,100)),limits=c(0,100),oob=scales::squish)
 
 	plot_rect<-
@@ -412,7 +399,7 @@ plot_export_dm<-function(the_df,data_mesh,model_name){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_training_pricing_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_training_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot <-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(pricing_error) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -423,7 +410,7 @@ plot_export_dm<-function(the_df,data_mesh,model_name){
 	plot_theme_opts +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_prediction_pricing_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_prediction_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot() + 	ggplot2::geom_rect(data=data_mesh,ggplot2::aes(x=mon_mid,y=mat_mid,xmin=mon_min,xmax=mon_max,ymin=mat_min,ymax=mat_max,fill=model_estimate),alpha=0.75) +
@@ -432,7 +419,7 @@ plot_export_dm<-function(the_df,data_mesh,model_name){
 	ggplot2::labs(fill="",title=paste0("Cluster Estimates (",toupper(model_name)," Method)")) +
 	ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_cluster_estimate_pricing_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_cluster_estimate_pricing_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(desc(pricing_error)) %>% dplyr::filter(t_or_p=="Training"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -441,7 +428,7 @@ plot_export_dm<-function(the_df,data_mesh,model_name){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_training_prediction_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_training_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 	the_plot<-
 	ggplot2::ggplot(data=the_df %>% dplyr::arrange(desc(pricing_error)) %>% dplyr::filter(t_or_p=="Prediction"),mapping=ggplot2::aes(x=moneyness,y=maturity)) +
@@ -450,6 +437,6 @@ plot_export_dm<-function(the_df,data_mesh,model_name){
 		plot_theme_opts +
 		ggplot2::theme_bw()
 
-	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_prediction_prediction_error.png"),the_plot,width=12,height=5)
+	ggplot2::ggsave(paste0("learnfin_plots/",model_name,"_method_prediction_prediction_error_",opt_type,"_",timestamp,".png"),the_plot,width=12,height=5)
 
 }
