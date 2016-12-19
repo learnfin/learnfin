@@ -104,3 +104,55 @@ run_full_experiment<-function(data_set="learnfin_ds_1",error_type="ARPE",method=
     }
     return(the_summary)
 }
+
+get_prediction_errors_from_files<-function(results_folder=paste0(getwd(),"/results/"),export_error_tables=TRUE){
+    files_list<-dir(results_folder,pattern="RData",full.names = FALSE)
+    if(length(files_list)==0){
+        stop("There are no results folders.")
+    }
+
+    data_sets<-as.numeric(gsub("_","",substr(files_list,13,14)))
+    parameter_sets<-gsub(".*parameter_set_|.RData","",files_list)
+    dm_table <- data.frame(PSet1=character(),PSet2=character(),DM=numeric(),p_val=numeric(),DS=numeric())
+    #From each data set get the prediction error of the algorithms in a single table
+    for(i in unique(data_sets)){
+        print(i)
+        ds_files<-files_list[data_sets == i]
+        ds_parameter_sets<-parameter_sets[data_sets==i]
+        load(paste0(results_folder,ds_files[1]))
+        error_table <- result_table %>% dplyr::select(-model_estimate) %>% dplyr::rename_(.dots=setNames("prediction_error",ds_parameter_sets[1]))
+
+        for(j in 2:length(ds_files)){
+            load(paste0(results_folder,ds_files[j]))
+            error_table <-
+            result_table %>%
+            dplyr::select(date,option_symbol,prediction_error) %>%
+            dplyr::rename_(.dots=setNames("prediction_error",ds_parameter_sets[j])) %>%
+            left_join(error_table,.,by=c("date","option_symbol"))
+        }
+
+        if(export_error_tables){
+            print("Saving...")
+            save(error_table,file=paste0(results_folder,"learnfin_ds_",i,"_all_prediction_errors.RData"))
+        }
+
+        #Create parameter set pairs for DM tests
+        parameter_set_pairs <- cbind(ds_parameter_sets[1],ds_parameter_sets[-(1)]) %>% dplyr::tbl_df()
+        for(j in 2:(length(ds_parameter_sets)-1)){
+            parameter_set_pairs<-rbind(parameter_set_pairs,cbind(ds_parameter_sets[j],ds_parameter_sets[-(1:j)])) %>% dplyr::tbl_df()
+        }
+        colnames(parameter_set_pairs) <- c("PSet1","PSet2")
+
+        dm_values<-plyr::mdply(parameter_set_pairs,.fun=get_dm_results,error_data=error_table %>% filter(t_or_p=="Prediction"))
+        dm_values <-
+            dm_values %>%
+            mutate(PSet3=PSet1,PSet1=PSet2,PSet2=PSet3,DM=-DM) %>%
+            select(-PSet3) %>%
+            rbind(.,dm_values) %>%
+            mutate(DS=i)
+
+        dm_table <- rbind(dm_table,dm_values)
+
+    }
+
+}

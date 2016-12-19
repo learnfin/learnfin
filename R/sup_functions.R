@@ -42,3 +42,16 @@ get_the_cluster<-function(Mon_sc,Mat_sc,center_matrix){
 	which.min(colSums((t(center_matrix)-c(Mon_sc,Mat_sc))^2))
 
 }
+
+
+#' @export
+get_dm_results<-function(PSet1,PSet2,error_data){
+    dm_result<-tryCatch(forecast::dm.test(unlist(error_data[,PSet1]),unlist(error_data[,PSet2]),power=1),error=function(e) return(FALSE))
+    if(dm_result[1] == FALSE){
+        dm_df<-data.frame(DM= NA,p_val=NA)
+
+    }else{
+        dm_df<-data.frame(DM=dm_result$statistic,p_val=round(dm_result$p.value,4))
+    }
+    return(dm_df)
+}
